@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sockets Through OSI Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        
+        .app-code {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .app-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .keyword { color: #66d9ef; }
+        .string { color: #e6db74; }
+        
+        .arrow-down {
+            text-align: center;
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin: 10px 0;
+        }
+        
+        .socket-api {
+            background: #95a5a6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            color: white;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .osi-title {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 15px 0 10px 0;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+        
+        .layer {
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            transition: transform 0.2s;
+        }
+        
+        .layer:hover {
+            transform: translateX(3px);
+        }
+        
+        .layer-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .layer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .layer-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .layer-subtitle {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .layer-info {
+            font-size: 0.8em;
+            line-height: 1.4;
+        }
+        
+        .layer7 { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .layer7 .layer-number { color: #e74c3c; }
+        
+        .layer6 { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); }
+        .layer6 .layer-number { color: #e67e22; }
+        
+        .layer5 { background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%); }
+        .layer5 .layer-number { color: #f39c12; }
+        
+        .layer4 {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            border: 4px solid #f39c12;
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
+        }
+        .layer4 .layer-number { color: #2ecc71; }
+        
+        .socket-badge {
+            background: rgba(243, 156, 18, 0.9);
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .layer3 { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .layer3 .layer-number { color: #3498db; }
+        
+        .layer2 { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .layer2 .layer-number { color: #9b59b6; }
+        
+        .layer1 { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+        .layer1 .layer-number { color: #34495e; }
+        
+        .hardware {
+            background: #f8f9fa;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .hardware-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .hardware-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .hardware-item {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .key-takeaway {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .key-takeaway h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .key-takeaway p {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 How Sockets Travel Through the OSI Model</h1>
+        <p class="subtitle">From Your Application Code Down to Physical Hardware</p>
+        
+        <!-- Application Code -->
+        <div class="app-code">
+            <div class="app-title">💻 Your C# Application</div>
+            <div class="code-block">
+<span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient();
+<span class="keyword">var</span> response = <span class="keyword">await</span> client.GetAsync(<span class="string">"https://api.example.com"</span>);
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Socket API -->
+        <div class="socket-api">
+            <strong>🔌 SOCKET API</strong> (Berkeley Sockets / Winsock)<br>
+            socket(), bind(), connect(), send(), recv()
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- OSI Model Title -->
+        <div class="osi-title">OSI MODEL (7 LAYERS)</div>
+        
+        <!-- Layer 7: Application -->
+        <div class="layer layer7">
+            <div class="layer-number">7</div>
+            <div class="layer-content">
+                <div class="layer-title">Application Layer</div>
+                <div class="layer-subtitle">Where your application operates</div>
+                <div class="layer-info">
+                    <strong>Protocols:</strong> HTTP/HTTPS, FTP, SMTP, DNS<br>
+                    <strong>What happens:</strong> Formats HTTP request (e.g., "GET /api/users HTTP/1.1")
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 6: Presentation -->
+        <div class="layer layer6">
+            <div class="layer-number">6</div>
+            <div class="layer-content">
+                <div class="layer-title">Presentation Layer</div>
+                <div class="layer-subtitle">Data translation, encryption, compression</div>
+                <div class="layer-info">
+                    <strong>Functions:</strong> SSL/TLS encryption, data encoding (UTF-8), compression (GZIP)<br>
+                    <strong>What happens:</strong> Encrypts data for HTTPS, converts to transmittable format
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 5: Session -->
+        <div class="layer layer5">
+            <div class="layer-number">5</div>
+            <div class="layer-content">
+                <div class="layer-title">Session Layer</div>
+                <div class="layer-subtitle">Manages connections and sessions</div>
+                <div class="layer-info">
+                    <strong>Functions:</strong> Session establishment, maintenance, termination, authentication<br>
+                    <strong>What happens:</strong> Establishes and manages dialogue between applications
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 4: Transport - THE SOCKET LAYER -->
+        <div class="layer layer4">
+            <div class="layer-number">4</div>
+            <div class="layer-content">
+                <div class="layer-title">⭐ Transport Layer - SOCKET LIVES HERE! ⭐</div>
+                <div class="layer-subtitle">End-to-end connections and reliable data transfer</div>
+                <div class="layer-info">
+                    <strong>Protocols:</strong> TCP (reliable, connection-oriented) • UDP (fast, connectionless)<br>
+                    <strong>What happens:</strong> Breaks data into segments, adds PORT numbers (e.g., 52341 → 443), ensures delivery
+                </div>
+                <div class="socket-badge">
+                    🔌 YOUR SOCKET OPERATES AT THIS LAYER!
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 3: Network -->
+        <div class="layer layer3">
+            <div class="layer-number">3</div>
+            <div class="layer-content">
+                <div class="layer-title">Network Layer</div>
+                <div class="layer-subtitle">Routing and logical addressing</div>
+                <div class="layer-info">
+                    <strong>Protocols:</strong> IP (IPv4/IPv6), ICMP, Routers<br>
+                    <strong>What happens:</strong> Adds IP addresses (192.168.1.100 → 93.184.216.34), routes packets
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 2: Data Link -->
+        <div class="layer layer2">
+            <div class="layer-number">2</div>
+            <div class="layer-content">
+                <div class="layer-title">Data Link Layer</div>
+                <div class="layer-subtitle">Physical addressing and error detection</div>
+                <div class="layer-info">
+                    <strong>Protocols:</strong> Ethernet, Wi-Fi (802.11), MAC addresses, Switches<br>
+                    <strong>What happens:</strong> Adds MAC addresses, creates frames, error detection (checksums)
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Layer 1: Physical -->
+        <div class="layer layer1">
+            <div class="layer-number">1</div>
+            <div class="layer-content">
+                <div class="layer-title">Physical Layer</div>
+                <div class="layer-subtitle">Raw bits over physical medium</div>
+                <div class="layer-info">
+                    <strong>Hardware:</strong> Ethernet cables, Fiber optic, Wi-Fi radio waves, Network cards<br>
+                    <strong>What happens:</strong> Converts to electrical signals/light/radio waves - actual 1s and 0s
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <!-- Physical Hardware -->
+        <div class="hardware">
+            <div class="hardware-title">🔌 Physical Hardware</div>
+            <div class="hardware-items">
+                <div class="hardware-item">Network Card (NIC)</div>
+                <div class="hardware-item">Ethernet Cable / Wi-Fi</div>
+                <div class="hardware-item">Router / Switch / Modem</div>
+            </div>
+        </div>
+        
+        <!-- Key Takeaway -->
+        <div class="key-takeaway">
+            <h3>🎯 Key Takeaway</h3>
+            <p>
+                When you create a socket in C#, it operates at <strong>Layer 4 (Transport)</strong>. 
+                The OS automatically handles layers 3, 2, and 1—adding IP addresses, MAC addresses, 
+                and converting to physical signals. You write high-level code, the OS does the heavy lifting!
+            </p>
+        </div>
+    </div>
+</body>
+</html>
